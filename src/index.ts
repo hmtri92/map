@@ -33,13 +33,37 @@ function initMap(): void {
     center: hcm,
     zoom: 15,
   });
+  service = new google.maps.places.PlacesService(map);
 
   const request = {
-    query: "562 Nguyen Van Cu, P. Gia Thuy, Long Bien District, Hanoi",
+    query: "3, Nguyễn Lương Bằng, Quận 7, Ho Chi Minh City, Vietnam",
     fields: ["name", "geometry", "place_id"],
   };
 
-  service = new google.maps.places.PlacesService(map);
+
+  service.findPlaceFromQuery(
+    request,
+    (
+      results: google.maps.places.PlaceResult[] | null,
+      status: google.maps.places.PlacesServiceStatus
+    ) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+
+        map.setCenter(results[0].geometry!.location!);
+      }
+    }
+  );
+
+}
+
+function search(address: string) {
+  const request = {
+    query: address,
+    fields: ["name", "geometry", "place_id"],
+  };
 
   service.findPlaceFromQuery(
     request,
@@ -54,10 +78,24 @@ function initMap(): void {
         }
 
         map.setCenter(results[0].geometry!.location!);
+        return results[0];
       }
     }
   );
+}
 
+function createMarker(place: google.maps.places.PlaceResult) {
+  if (!place.geometry || !place.geometry.location) return;
+
+  const marker = new google.maps.Marker({
+    map,
+    position: place.geometry.location,
+  });
+
+  google.maps.event.addListener(marker, "click", () => {
+    infowindow.setContent(place.name || "");
+    infowindow.open(map);
+  });
 }
 
 function detail(place: google.maps.places.PlaceResult) {
@@ -77,30 +115,45 @@ function detail(place: google.maps.places.PlaceResult) {
         position: place.geometry.location,
       });
 
-      console.log(place.geometry.location.lat() + ", " + place.geometry.location.lng());
+      const latlng = `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`
+
+      console.log(latlng);
+      addLatLng(latlng);
     }
   });
 }
 
-function createMarker(place: google.maps.places.PlaceResult) {
-  if (!place.geometry || !place.geometry.location) return;
+function addLatLng(latlng: string) {
+  let parent = document.getElementById('output');
 
-  const marker = new google.maps.Marker({
-    map,
-    position: place.geometry.location,
-  });
+  var e = document.createElement('p');
+  e.innerHTML = latlng;
 
-  google.maps.event.addListener(marker, "click", () => {
-    infowindow.setContent(place.name || "");
-    infowindow.open(map);
-  });
+  parent?.appendChild(e);
 }
 
 function getAddress() : [string] {
-  const textArea = document.getElementById("address")?.ariaValueText;
-  console.log(textArea);
+  clearResult();
+
+  const textArea = document.querySelector("#address") as HTMLInputElement;
+  if (textArea) {
+    const val = textArea.value;
+    const lstAddress = val.split("\n");
+    let result = [];
+    for (let address of lstAddress) {
+      console.log(address);
+      search(address);
+    }
+  }
   let address = "";
   return [""];
+}
+
+function clearResult() {
+  let parent = document.getElementById('output');
+  while (parent?.firstChild) {
+    parent.removeChild(parent.firstChild);
+}
 }
 
 export { initMap, getAddress };
