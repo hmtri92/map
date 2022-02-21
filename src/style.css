@@ -1,0 +1,40 @@
+/* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+#map {
+  height: 100%;
+  width: 50%;
+}
+
+.base {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.row {
+  display: flex;
+  padding: 5px;
+}
+
+.col {
+  float: left;
+  width: 50%;
+  flex: 50%;
+}
+
+.fullHight {
+  height: 100%;
+}
+
+textarea {
+  width: 100%;
+  height: 90vh;
+}
+
+/* Optional: Makes the sample page fill the window. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
