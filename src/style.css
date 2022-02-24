@@ -5,6 +5,14 @@
   width: 20%;
 }
 
+#btnSubmit {
+  padding: 10px 40px;
+}
+
+#message {
+  padding-left: 20px;
+}
+
 .base {
   display: flex;
   width: 100%;

@@ -141,12 +141,21 @@ async function getAddress() {
         await sleep(3000);
       }
     }
+    let message = document.getElementById('message');
+    var e = document.createElement('p');
+    e.innerHTML = 'Done';
+    message?.appendChild(e);
   }
 }
 
 function clearResult() {
   let output = document.getElementById('output') as HTMLInputElement;
   output.value = "";
+  
+  let message = document.getElementById('message');
+  while (message?.firstChild) {
+    message.removeChild(message.firstChild);
+  }
 }
 
 function sleep(ms) {
