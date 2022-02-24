@@ -65,19 +65,14 @@ function search(address: string) {
     fields: ["name", "geometry", "place_id"],
   };
 
-  service.findPlaceFromQuery(
+  const place = service.findPlaceFromQuery(
     request,
     (
       results: google.maps.places.PlaceResult[] | null,
       status: google.maps.places.PlacesServiceStatus
     ) => {
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-        for (let i = 0; i < results.length; i++) {
-          createMarker(results[i]);
-          detail(results[i]);
-        }
-
-        map.setCenter(results[0].geometry!.location!);
+        detail(address, results[0]);
         return results[0];
       }
     }
@@ -98,7 +93,7 @@ function createMarker(place: google.maps.places.PlaceResult) {
   });
 }
 
-function detail(place: google.maps.places.PlaceResult) {
+function detail(address: string, place: google.maps.places.PlaceResult) {
   const request = {
     placeId: place.place_id || "",
     fields: ["name", "formatted_address", "place_id", "geometry"]
@@ -118,42 +113,41 @@ function detail(place: google.maps.places.PlaceResult) {
       const latlng = `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`
 
       console.log(latlng);
-      addLatLng(latlng);
+      addLatLng(address, latlng);
     }
   });
 }
 
-function addLatLng(latlng: string) {
-  let parent = document.getElementById('output');
+function addLatLng(address: string, latlng: string) {
+  let output = document.getElementById('output') as HTMLInputElement;
 
-  var e = document.createElement('p');
-  e.innerHTML = latlng;
-
-  parent?.appendChild(e);
+  output.value += address + "\t" + latlng + "\n";
 }
 
-function getAddress() : [string] {
+async function getAddress() {
   clearResult();
 
   const textArea = document.querySelector("#address") as HTMLInputElement;
   if (textArea) {
     const val = textArea.value;
     const lstAddress = val.split("\n");
-    let result = [];
     for (let address of lstAddress) {
       console.log(address);
       search(address);
+      await sleep(2000);
     }
   }
-  let address = "";
-  return [""];
 }
 
 function clearResult() {
-  let parent = document.getElementById('output');
-  while (parent?.firstChild) {
-    parent.removeChild(parent.firstChild);
+  let output = document.getElementById('output') as HTMLInputElement;
+  output.value = "";
 }
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 export { initMap, getAddress };
