@@ -2,7 +2,7 @@
        * element that contains the map. */
 #map {
   height: 100%;
-  width: 50%;
+  width: 20%;
 }
 
 .base {
@@ -13,14 +13,14 @@
 
 .row {
   display: flex;
-  padding: 5px;
+  padding: 10px;
 }
 
 .col {
   float: left;
   width: 50%;
   flex: 50%;
-  padding: 3px;
+  padding: 10px;
 }
 
 .fullHight {
@@ -29,7 +29,8 @@
 
 textarea {
   width: 100%;
-  height: 90vh;
+  height: 100%;
+  max-width: 90%;
 }
 
 /* Optional: Makes the sample page fill the window. */

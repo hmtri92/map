@@ -65,7 +65,7 @@ function search(address: string) {
     fields: ["name", "geometry", "place_id"],
   };
 
-  const place = service.findPlaceFromQuery(
+  service.findPlaceFromQuery(
     request,
     (
       results: google.maps.places.PlaceResult[] | null,
@@ -74,6 +74,9 @@ function search(address: string) {
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
         detail(address, results[0]);
         return results[0];
+      } else {
+        const latlng = "Not Found"
+        addLatLng(address, latlng);
       }
     }
   );
@@ -111,8 +114,9 @@ function detail(address: string, place: google.maps.places.PlaceResult) {
       });
 
       const latlng = `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`
-
-      console.log(latlng);
+      addLatLng(address, latlng);
+    } else {
+      const latlng = "Not Found"
       addLatLng(address, latlng);
     }
   });
@@ -132,9 +136,10 @@ async function getAddress() {
     const val = textArea.value;
     const lstAddress = val.split("\n");
     for (let address of lstAddress) {
-      console.log(address);
-      search(address);
-      await sleep(2000);
+      if (address) {
+        search(address);
+        await sleep(3000);
+      }
     }
   }
 }
